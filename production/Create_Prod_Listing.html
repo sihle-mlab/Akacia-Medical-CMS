@@ -1,0 +1,464 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Akacia Medical Solution | Create Product Listing</title>
+
+<!-- Bootstrap -->
+<link href="../vendors/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Font Awesome -->
+<link href="../vendors/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet">
+<!-- NProgress -->
+<link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+<!-- Dropzone.js -->
+<link href="../vendors/dropzone/dist/min/dropzone.min.css"
+	rel="stylesheet">
+
+<!-- Custom Theme Style -->
+<link href="../build/css/custom.min.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+<!--Firebase Connection-->
+<!--firebase-->
+
+</head>
+<body class="nav-md">
+
+
+    <!--firebase-->
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+	<script src="init.js"></script>
+    <script>
+        var database = firebase.database().ref('products/');
+        var changes = firebase.database().ref('changes/');
+        var userRef = firebase.database().ref().child("csa");
+        var storage = firebase.storage();
+        var storageRef = storage.ref();
+        var imagesRef = storageRef.child('products/');
+        var url;
+        var file;
+        var metadata;
+        var u_email;
+        var changesRef = firebase.database().ref('changes/');
+        var where = database.target;
+        var when;
+        var what;
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#images')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(190);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+            file = input.files[0]; //input.files[0];
+            metadata = {
+                'contentType': file.type
+            };
+        }
+  
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#images')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(190);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        //START logout
+        function logout() {
+            firebase.auth().signOut();
+            window.location.href = "login.html"
+        }
+        //END logout
+        function sendData() {
+            // Push to child path.
+                // [START oncomplete]
+            imagesRef.child(file.name).put(file, metadata).then(function (snapshot) {
+                console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+                alert(snapshot.metadata.fullPath);
+                url = snapshot.downloadURL;
+
+                var p_code = document.getElementById("input_product_code").value;
+                var p_consumables = document.getElementById("input_product_consumables").value;
+                var p_description = document.getElementById("input_product_description").value;
+                var p_pricing = document.getElementById("input_product_pricing").value;
+                var p_pricing_unit = document.getElementById("input_product_pricing_unit").value;
+
+                var where = "product listing"
+                var what = p_consumables;
+                var who = u_email;
+
+                changesMade(p_code, p_consumables, p_description, url, p_pricing, p_pricing_unit, what, who, where);
+            }
+                );
+        }
+
+        function changesMade(Code, Consumables,Description, Url, Pricing, PricingUnit, What, Who, Where) {
+                    try{
+
+                    var newPromo = {
+                        CODE: Code,
+                        CONSUMABLES: Consumables,
+                        DESCRIPTION: Description,
+                        IMAGE: Url,
+                        PRICING: Pricing,
+                        PRICING_UNIT: PricingUnit,
+                        WHERE: Where,
+                        WHAT: What,
+                        WHO: Who,
+                        WHEN: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    var newChangekey = changesRef.push().key;
+
+                    var updates ={};
+                    updates['/'+newChangekey] = newPromo;
+
+                    return changesRef.update(updates);
+                }catch(err){
+
+                    return alert("create promo error:" + err);
+                    
+                }
+                finally {
+                            alert("New Product is now awaiting approval");
+                            window.location.href = "Create_Prod_Listing.html"
+                        }
+
+            
+        }
+
+        window.onload = function () {
+
+            firebase.auth().onIdTokenChanged(function (user) {
+                if (user) {
+                    u_email = user.email;
+                    console.log(user.email + "    " + user.uid);
+                    // User is signed in or token was refreshed.
+                }
+                else {
+                    alert('You are not authorised to perform this action /n Please login');
+                    window.location.href="login.html"
+                    }
+            });
+            userRef.once('value', function (snapshot) {
+
+                snapshot.forEach(function (childSnap) {
+
+                    if (childSnap.val().Email == u_email) {
+                        document.getElementById("csa_name").innerHTML = childSnap.val().Name + " " + childSnap.val().LastName;
+                        document.getElementById("csa_corner_name").innerHTML = childSnap.val().Name + " " + childSnap.val().LastName;
+                        
+                        document.getElementById("csa_card_image").src = childSnap.val().ProfileImage;
+                        document.getElementById("csa_corner_image").src = childSnap.val().ProfileImage;
+                        
+                    }
+
+                });
+
+            });
+
+        }
+
+        function CreateProduct(Code, Name, Description, Url, Pricing, PricingUnit) {
+            try {
+                //when = firebase.ServerValue.TIMESTAMP;
+                //what = "create product " + Code;
+                database.push({
+                    CODE: Code,
+                    CONSUMABLES: Name,
+                    DESCRIPTION: Description,
+                    IMAGE: Url,
+                    PRICING: Pricing,
+                    PRICING_UNIT: PricingUnit
+                });
+                //changesMade(u_email, where, what,  when);
+            }
+            catch (err) {
+                alert("create product:" + err);
+            }finally{
+                alert("Product successfully added");
+                document.getElementById("input_product_code").value = "";
+                document.getElementById("input_product_consumables").value = "";
+                document.getElementById("input_product_description").value = "";
+                document.getElementById("input_product_pricing").value = "";
+                document.getElementById("input_product_pricing_unit").value = "";
+            }
+
+        }
+
+    </script>
+
+	<div class="container body">
+		<div class="main_container">
+			<div class="col-md-3 left_col">
+				<div class="left_col scroll-view">
+					<div class="navbar nav_title" style="border: 0;">
+						<a href="indexs.html" class="site_title">
+							<span>Akacia MS</span></a>
+					</div>
+
+					<div class="clearfix"></div>
+
+					<!-- menu profile quick info -->
+					<div class="profile clearfix">
+						<div class="profile_pic">
+							<img id="csa_card_image" style="width:50px; height:50px;" src="images/placeholder_image.jpg" alt="..."
+								class="img-circle profile_img">
+						</div>
+						<div class="profile_info">
+							<span>Welcome,</span>
+							<h2 id="csa_name">User Name</h2>
+						</div>
+					</div>
+					<!-- /menu profile quick info -->
+
+					<br />
+
+					<!-- sidebar menu -->
+					<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>General</h3>
+                             <ul class="nav side-menu">
+								<li>
+                                    <a href="indexs.html">
+                                        <i class="fa fa-edit">
+                                        </i> Home
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Prod_Listing.html">
+                                        <i class="fa fa-edit">
+                                        </i> Create Product Listings
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Edit_Prod_Listing.html">
+                                        <i class="fa fa-table"></i> Edit Product Listings <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+								<li>
+                                    <a href="View_Promotional_Content.html">
+                                        <i class="fa fa-table"></i> View Promotional Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Promotional_Content.html">
+                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+					</div>
+					<!-- /menu footer buttons -->
+					<div class="sidebar-footer hidden-small">
+						 <a data-toggle="tooltip" data-placement="top" title="Logout"
+							href="login.html"> <span class="glyphicon glyphicon-off"
+							aria-hidden="true"></span>
+						</a>
+					</div>
+					<!-- /menu footer buttons -->
+					<!-- /sidebar menu -->
+
+					
+				</div>
+			</div>
+
+			<!-- top navigation -->
+			<div class="top_nav">
+				<div class="nav_menu">
+					<nav>
+
+						<ul class="nav navbar-nav navbar-right">
+							<li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img id="csa_corner_image" src="images/placeholder_image.jpg" alt="">
+									<i id="csa_corner_name">User name</i>
+                                    <span class="fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
+                                    <li><a href="Profile.html"> Profile</a></li>
+                                   
+                                    <li><a onclick="logout()"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                </ul>
+                            </li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- /top navigation -->
+
+			<!-- page content -->
+			<div class="right_col" role="main">
+				<div class="">
+				
+
+					<div class="clearfix"></div>
+
+					<div class="row">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+								<div class="x_title">
+									<h2>Create Product Listing</h2>
+									<div class="clearfix"></div>
+								</div>
+								<div class="item form-group">
+								
+								<form name="form_name">
+									<label class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="occupation">Product Code <span class="required">*</span>
+									</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="input_product_code" type="text" name="occupation" 
+											data-validate-length-range="5,20"
+											class="optional form-control col-md-7 col-xs-12">
+									</div>
+								</form>
+									<br />
+									<br /> 
+									
+									<form name="form_type">
+									<label
+										class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="occupation">Product Name<span
+										class="required">*</span>
+									</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="input_product_consumables" type="text" 
+											name="occupation" data-validate-length-range="5,20"
+											class="optional form-control col-md-7 col-xs-12">
+									</div>
+										</form>
+									
+									<br />
+									<br/> 
+									
+									
+									<form name="form_size">
+									<label
+										class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="occupation">Product Pricing <span
+										class="required">*</span>
+									</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="input_product_pricing" type="text" 
+											name="occupation" data-validate-length-range="5,20"
+											class="optional form-control col-md-7 col-xs-12">
+									</div>
+									</form>
+									<br />
+									<br /> 
+									
+									<form name="form_description">
+									<label
+										class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="textarea">Product Pricing Unit <span
+										class="required">*</span>
+									</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="input_product_pricing_unit" type="text" 
+											name="occupation" data-validate-length-range="5,20"
+											class="optional form-control col-md-7 col-xs-12">
+									</div>
+									</form>
+									<br />
+									<br />
+									
+									<form name="form_description">
+									<label
+										class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="textarea">Product Description <span
+										class="required">*</span>
+									</label>
+									<div class="col-md-6 col-sm-6 col-xs-12">
+										<input id="input_product_description" type="text" 
+											name="occupation" data-validate-length-range="5,20"
+											class="optional form-control col-md-7 col-xs-12">
+									</div>
+									</form>
+									<br />
+
+
+                                    <form>
+									<label
+										class="control-label col-md-3 col-sm-3 col-xs-12"
+										for="textarea">Image <span class="required">*</span>
+									</label>
+                                        <div class="product-image col-md-6 col-sm-6 col-xs-12" style="position:relative;">
+                                            <img src="images/placeholder_image.jpg" alt="..." id="images" style="width:150px; height:150px;" >
+                                            
+                                            <button id="files" onclick="document.getElementById('file').click(); return false;" >Add Image </button>
+                                            <input type="file" name="file" onchange="handleFileSelect(this);"  style="visibility:hidden" id="file" accept="image/*">
+                                        </div>
+                                        </form>
+										<br /> 
+
+									<div class="form-group">
+										<div class="col-md-6 col-md-offset-3">
+											<button id="btn_send" type="submit" onclick=  "sendData()"style="position:relative; right:-225px; width:190px;" class="btn btn-success">Submit</button>
+										</div>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /page content -->
+
+			<!-- footer content -->
+            <footer>
+                <div class="pull-right">
+                    Akacia Medical innovative healthcare solutions in Africa.
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+			<!-- /footer content -->
+		</div>
+	</div>
+
+	<!-- jQuery -->
+	<script src="../vendors/jquery/dist/jquery.min.js">
+</script>
+	<!-- Bootstrap -->
+	<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+	<!-- FastClick -->
+	<script src="../vendors/fastclick/lib/fastclick.js"></script>
+	<!-- NProgress -->
+	<script src="../vendors/nprogress/nprogress.js"></script>
+	<!-- Dropzone.js -->
+	<script src="../vendors/dropzone/dist/min/dropzone.min.js"></script>
+
+	<!-- Custom Theme Scripts -->
+	<script src="../build/js/custom.min.js"></script>
+    <script src="js/toastr/toastr.js"></script>
+</body>
+
+</html>

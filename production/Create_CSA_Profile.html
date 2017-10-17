@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Akacia Medica | </title>
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+    
+</head>
+<body>
+
+    <!-- page content -->
+    <div class="right_cnol" role="main">
+        <div class=>
+            <div class="page-title">
+                <div class="title_left">
+                    <div>
+                        <a href="index.html" class="site_title"><img src="images/img.jpg"></a>
+                    </div>
+                </div>
+            </div>
+
+
+    <!--firebase-->
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="init.js"></script>
+    <script>
+    
+
+
+        //varriables here
+        var database = firebase.database().ref().child("csa");
+        var userID;
+        var storage = firebase.storage()
+        var storageRef = storage.ref();
+        var imagesRef = storageRef.child('csa/');
+        var url;
+
+        var file;
+        var metadata;
+        var u_email;
+        
+
+
+        
+
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#images')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(190);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+            file = input.files[0]; //input.files[0];
+            metadata = {
+                'contentType': file.type
+            };
+            
+        }
+        
+
+        //the onload function
+        window.onload = function () {
+
+            firebase.auth().onIdTokenChanged(function (user) {
+                if (user) {
+                    userID = user.uid;
+                    u_email = user.email;
+                    document.getElementById("email_field").innerHTML =u_email;
+                    // User is signed in or token was refreshed.
+                }
+            });
+
+
+            try {
+                var key = 0;
+                database.once('value', function (snapshot) {
+                    snapshot.forEach(function (childSnap) {
+
+                        if (childSnap.val().Email == u_email) {
+                            window.location.href = "indexs.html";
+                        }
+
+                    });
+                });
+            } catch (err) {
+                alert(err);
+            }
+        }
+        var sendIt = false;
+
+        function sendData() {
+            
+            try {
+                
+                    imagesRef.child(file.name).put(file, metadata).then(function (snapshot) {
+                        console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+                        console.log(snapshot.metadata);
+                        alert("Image upload success");
+                        url = snapshot.downloadURL;
+                        
+                        var u_name = document.getElementById("user_name").value;
+                        var u_lname = document.getElementById("user_lname").value;
+                        var u_emp_num = document.getElementById("user_num").value;
+                        var u_cell = document.getElementById("user_cell").value;
+                        var u_work_phone = document.getElementById("user_work_phone").value;
+                        var u_gender = document.getElementById("user_gender").value;
+
+                    alert(url);
+                    CreateProfile(u_name, u_lname, u_emp_num, u_cell, u_work_phone, u_gender, url, u_email);
+                
+                    }).catch(function (error) {
+                    
+                        console.error('Upload failed:', error);
+                        
+                    });
+                    
+            } catch (err) {
+                alert("the image upload error: "+err);
+            }
+            
+
+            
+            
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#images')
+                    .attr('src', e.target.result)
+                    .width(200)
+                    .height(190);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function CreateProfile(Name, lastName, empNum, cellNum, workPhone, gender, theURL, email) {
+            try {
+                database.push({
+                    Name: Name,
+                    LastName: lastName,
+                    EmployeeNumber: empNum,
+                    CellNumber: cellNum,
+                    WorkPhone: workPhone,
+                    Gender: gender,
+                    ProfileImage: theURL,
+                    Email: email
+                });
+            }
+            catch (err) {
+                alert("create profile error:"+err)
+            }
+
+        }
+    </script>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-g12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>CSA Profile Registration</h2>
+
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <!-- Tabs -->
+                                    <form class="form-horizontal form-label-left">
+                                        <span class="section">Personal Info</span>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3" for="first-name">
+                                                First Name <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input type="text" id="user_name" required="required" class="form-control col-md-7 col-xs-12">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3" for="last-name">
+                                                Last Name <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input type="text" id="user_lname" name="last-name" required="required" class="form-control col-md-7 col-xs-12">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3" for="last-name">
+                                                Employee Number <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input type="text" id="user_num" name="last-name" required="required" class="form-control col-md-7 col-xs-12">
+                                            </div>
+                                        </div>
+                                        <span class="section">Employee Info</span>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3" for="Phone-number">
+                                                Phone Number <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input type="text" id="user_cell" required="required" class="form-control col-md-7 col-xs-12">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3" for="Alt-Phone-number">
+                                                Work Phone number <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input type="text" id="user_work_phone" name="Alt-Phone-number" required="required" class="form-control col-md-7 col-xs-12">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email" class="control-label col-md-3 col-sm-3">Gender <span class="required">*</span></label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input id="user_gender" class="form-control col-md-7 col-xs-12" type="text" name="email">
+                                            </div>
+                                        </div>
+                                        </form>
+                                    <br><br>
+                                        <span class="section">Profile Pic</span>
+                                    <div class="col-md-7 col-sm-7 col-xs-12">
+                                        <div class="product-image">
+                                            <img src="images/user.png" alt="..." id="images" style="position:relative; right:-205px; width:150px; height:150px;" class="img-circle profile_img">
+                                            
+                                            <button id="files" onclick="document.getElementById('file').click(); return false;" style="position:relative; right:-225px; width:190px;">Edit image </button>
+                                            <input type="file" name="file" onchange="handleFileSelect(this);"  style="visibility:hidden" id="file" accept="image/*">
+                                        </div>
+
+                                    </div>
+
+                                        <div class="form-group">
+                                            <div class="col-md-3 col-sm-3" style="position:relative;bottom:-170px;">
+                                                <button id="btn_send" type="submit" onclick="sendData()" class="btn btn-success">Submit</button>
+                                                <button id="btn_image" class="btn btn-primary" type="submit" onclick="sendImage()">Submit</button>
+                                            </div>
+                                        </div>
+                                </div>
+                            
+                        </div>
+                       
+
+                        <!-- End SmartWizard Content -->
+                    </div>
+                </div>
+            </div>
+    <!-- /page content -->
+   <!-- footer content -->
+    <footer>
+        <div class="pull-right">
+            Akacia Medical innovative healthcare solutions in Africa.
+        </div>
+        <div class="clearfix"></div>
+    </footer>
+    <!-- /footer content -->
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- jQuery Smart Wizard -->
+    <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="js/toastr/toastr.js"></script>
+
+</body>
+</html> 

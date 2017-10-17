@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Akacia Medical Solution | View Promotional Content</title>
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+
+    <link href="../production/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="../production/css/TableTools.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+    <!--Firebase Connection-->
+    <!--firebase-->
+</head>
+<body class="nav-md">
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="init.js"></script>
+    <script>
+        // Initialize Firebase
+        
+
+        var userRef = firebase.database().ref().child("csa");
+        var PromoRef = firebase.database().ref().child("promotional content");
+        var u_email;
+
+
+        function getCode(click) {
+            document.getElementById("featureView").setAttribute('data', click);
+
+        }
+
+        
+
+            //START logout
+        function logout() {
+            firebase.auth().signOut();
+            window.location.href = "login.html"
+        }
+            //END logout
+        //START onload
+        window.onload = function () {
+    
+
+            firebase.auth().onIdTokenChanged(function (user) {
+
+                if (user) {
+                    u_email = user.email;
+                    toastr.error(u_email);
+                    // User is signed in or token was refreshed.
+                }
+                else {
+                    // alert('You are not authorised to perform this action /n Please login');
+                    window.location.href = "login.html"
+                }
+            });
+            userRef.once('value', function (snapshot) {
+
+                snapshot.forEach(function (childSnap) {
+
+                    if (childSnap.val().Email == u_email) {
+                        document.getElementById("csa_name").innerHTML = childSnap.val().Name + " " + childSnap.val().LastName;
+                        document.getElementById("csa_corner_name").innerHTML = childSnap.val().Name + " " + childSnap.val().LastName;
+
+                        document.getElementById("csa_card_image").src = childSnap.val().ProfileImage;
+                        document.getElementById("csa_corner_image").src = childSnap.val().ProfileImage;
+
+                    }
+
+                });
+
+            });
+
+
+            
+            PromoRef.on("child_added", snap => {
+
+                var title = snap.child("TITLE").val();
+                //var link = snap.child("LINK").val();
+                var Description = snap.child("DESCRIPTION").val();
+                var Image = snap.child("IMAGE").val();
+
+                $("#promo_body").append("<div class='col-md-55' style='cursor:pointer' data-toggle='modal' data-target='#featureModal' onclick='getCode(this.id)'  id=" + Image
+                    + "><div class='thumbnail image view view-first'><img id='image' src=" + Image + " /><div class='mask'><p id='title'>" + title
+                    + "</p><div class='tools tools-top'><a>preview</a></div></div></div><div class='caption'><p id='description'>"
+                    + Description + "</p></div></div>");
+            });
+        }
+        //END onload
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Droid+Sans);
+        .target-ratio-resize {
+            max-width: 960px; /* actual img width */
+            max-height: 150px; /* actual img height */
+            *height: 150px; /* actual img height - IE7 */
+            background-image: url(students.jpg);
+            background-size: cover;
+            background-position: center;
+        }
+        .target-ratio-resize:after {
+            content: " ";
+            display: block; 
+            width: 100%; 
+            padding-top: 33.333%; /* 3:1 ratio */
+        }
+
+        .loader {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url('images/other_.gif') 50% 50% no-repeat rgb(200, 214, 217);
+        }
+
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            border-top: 1px solid #E1F5FE;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            padding: 8px;
+            text-align: left;
+            border-left: 5px solid #ddd;
+            border-top: 5px solid #ddd;
+            border-bottom: 5px solid #ddd;
+            height: 50px;
+        }
+
+        tr:hover {
+            background-color: #C5E1A5;
+        }
+
+    </style>
+
+    <!--firebase-->
+    
+    
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+						<a href="indexs.html" class="site_title">
+							<span>Akacia MS</span></a>
+                    </div>
+                    
+
+                    <div class="clearfix"></div>
+                    <!-- menu profile quick info -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+							<img id="csa_card_image" style="width:50px; padding: 4.918%; height:50px;" src="images/placeholder_image.jpg" alt="..."
+								class="img img-circle profile_img img-responsive">
+						</div>
+                        <div class="profile_info">
+                            <span>Welcome,</span>
+                            <h2 id="csa_name" >Username</h2>
+                        </div>
+                    </div>
+                    <!-- /menu profile quick info -->
+                    <br />
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu"
+                         class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>General</h3>
+                             <ul class="nav side-menu">
+								<li>
+                                    <a href="indexs.html">
+                                        <i class="fa fa-edit">
+                                        </i> Home
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Prod_Listing.html">
+                                        <i class="fa fa-edit">
+                                        </i> Create Product Listings
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Edit_Prod_Listing.html">
+                                        <i class="fa fa-table"></i> Edit Product Listings <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+								<li>
+                                    <a href="View_Promotional_Content.html">
+                                        <i class="fa fa-table"></i> View Promotional Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Promotional_Content.html">
+                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <!-- /sidebar menu -->
+                    <!-- /menu footer buttons -->
+                    <div class="sidebar-footer hidden-small">
+
+                        <a data-toggle="tooltip" data-placement="top" title="Logout"  onclick="logout()">
+                            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <!-- /menu footer buttons -->
+                </div>
+            </div>
+
+            <!-- START Create Sector Modal -->
+			<div class="modal fade" id="featureModal" role="dialog">
+				<div class="modal-dialog">
+				
+				  <!-- Modal content-->
+				  <div class="modal-content">
+					<div class="modal-header">
+					  <button type="button" class="close" data-dismiss="modal">&times;</button>
+					  <h4 class="modal-title">Preview Screen</h4>
+					  
+					</div>
+					<div  class="modal-body">
+				  
+                        <object id="featureView" 
+                        type='application/pdf' 
+                        width='100%' 
+                        height='700px'></object>
+				  
+
+				  <div class="modal-footer">
+					  <button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle='modal'>Close</button>
+					</div>
+					  
+				  </div>
+				 
+					</div>
+				  </div>
+				  <!-- end modal content -->
+				  
+			</div>
+			  <!-- END Create Sector modal -->
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img id="csa_corner_image" src="images/placeholder_image.jpg" alt="">
+									<i id="csa_corner_name">User name</i>
+                                    <span class="fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
+                                    <li><a href="Profile.html"> Profile</a></li>
+                                   
+                                    <li><a onclick="logout()"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                </ul>
+                            </li>
+                           
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="clearfix"></div>
+
+                    <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" >
+
+							<div class="x_panel" id="promo_body">
+								<div class="x_title">
+         
+                                        <div class="mainDiv" align="left">
+										<div class="x_title">
+									<h2>View Promotional Content</h2>
+									<div class="clearfix"></div>
+								</div>
+                                            <!--
+                                            <table id="datatable-buttons" class="table table-striped table-bordered dataTable no-footer dtr-inline" role="grid" aria-describedby="datatable-buttons_info" style="width: 1105px;">
+                                                <thead>
+                                                    <tr role="row"><th >Image</th><th >Title</th><th >Link</th><th>goto</th></tr>
+                                                </thead>
+
+
+                                                
+                                            </table>
+                                            <div class="row" id="promo_body"></div>
+                                                -->
+
+                                        </div>
+
+                                        
+                                        
+                                                                       
+                                    </div>
+                             </div> 
+                    </div>
+					</div>
+                </div>
+                </div>
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer>
+                <div class="pull-right">
+                    Akacia Medical innovative healthcare solutions in Africa.
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+   
+</body>
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>
+<script src="js/toastr/toastr.js"></script>
+</html>

@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> AKASIA Medical Solution | CSA Profile</title>
+
+<!-- Bootstrap -->
+<link href="../vendors/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Font Awesome -->
+<link href="../vendors/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet">
+<!-- NProgress -->
+<link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+<!-- Dropzone.js -->
+<link href="../vendors/dropzone/dist/min/dropzone.min.css"
+	rel="stylesheet">
+
+<!-- Custom Theme Style -->
+<link href="../build/css/custom.min.css" rel="stylesheet">
+<!--Firebase Connection-->
+<!--firebase-->
+
+</head>
+
+
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+
+                    <!--firebase-->
+                    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+                    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+                    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-auth.js"></script>
+                    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+                    <script src="init.js"></script>
+                    <script>
+
+                        //varriables here
+                        var database = firebase.database().ref().child("csa");
+                        var userID;
+                        var url;
+                        var u_email;
+
+                        //var for data
+                        var u_name;
+                        var u_lname;
+                        var u_emp_num;
+                        var u_cell;
+                        var u_work_phone;
+                        var u_gender;
+
+                        function gotoEdit() {
+                            document.location.href = "Edit_CSA_Profile.html";
+                        }
+
+						 //START logout
+      function logout() {
+          firebase.auth().signOut();
+          window.location.href = "login.html"
+      }
+        //END logout
+						
+                        //start onload function
+                        window.onload = function () {
+
+                            firebase.auth().onIdTokenChanged(function (user) {
+                                if (user) {
+                                    userID = user.uid;
+                                    u_email = user.email;
+
+                                    // User is signed in or token was refreshed.
+                                }
+                                else {
+                                    window.location.href = "login.html";
+                                }
+                            });
+
+                            database.once('value', function (snapshot) {
+
+                                snapshot.forEach(function (childSnap) {
+
+                                    if (childSnap.val().Email == u_email) {
+                                        u_name = childSnap.val().Name;
+                                        u_lname = childSnap.val().LastName;
+                                        u_cell = childSnap.val().CellNumber;
+                                        u_email = childSnap.val().Email;
+                                        u_gender = childSnap.val().Gender;
+                                        url = childSnap.val().ProfileImage;
+                                        u_work_phone = childSnap.val().WorkPhone;
+                                        u_emp_num = childSnap.val().EmployeeNumber;
+                                    }
+
+                                });
+
+                                document.getElementById("csa_main_name").innerHTML = u_name;
+                                document.getElementById("csa_l_name").innerHTML = u_lname;
+                                document.getElementById("csa_cell").innerHTML = u_cell;
+                                document.getElementById("csa_email").innerHTML = u_email;
+                                document.getElementById("csa_work_phone").innerHTML = u_work_phone;
+                                document.getElementById("csa_card_image").src = url;
+                                document.getElementById("csa_corner_image").src = url;
+                            });
+                        }
+                        //end onload function
+
+                    </script>
+
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="indexs.html" class="site_title"><small>Akacia MS</small></a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!-- menu profile quick info -->
+                    <!-- /menu profile quick info -->
+                    <br />
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu"
+                         class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>General</h3>
+                            <ul class="nav side-menu">
+								<li>
+                                    <a href="indexs.html">
+                                        <i class="fa fa-edit">
+                                        </i> Home
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Prod_Listing.html">
+                                        <i class="fa fa-edit">
+                                        </i> Create Product Listings
+                                        <span class="fa fa-chevron-right">
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Edit_Prod_Listing.html">
+                                        <i class="fa fa-table"></i> Edit Product Listings <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+								<li>
+                                    <a href="View_Promotional_Content.html">
+                                        <i class="fa fa-table"></i> View Promotional Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Create_Promotional_Content.html">
+                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content <span class="fa fa-chevron-right"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+					
+					<!-- /menu footer buttons -->
+					<div class="sidebar-footer hidden-small">
+						 <a data-toggle="tooltip" data-placement="top" title="Logout"
+							href="login.html"> <span class="glyphicon glyphicon-off"
+							aria-hidden="true"></span>
+						</a>
+					</div>
+					<!-- /menu footer buttons -->
+                    <!-- /sidebar menu -->
+                </div>
+            </div>
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="Profile.html"> Profile</a></li>
+                                    
+                                    <li>
+                                        <a href="login.html">
+                                            <i class="fa fa-sign-out pull-right"></i> Log Out
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    
+                </div>
+                <div class="clearfix"></div>
+                <!--content-->
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>CSA Profile </h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="bs-example" data-example-id="simple-jumbotron">
+                                <div >
+                                    <img id="csa_card_image" src="images/user.png" alt="" class="img img-responsive" />
+                                </div>
+                                <h2 id="csa_main_name">Name</h2><h2 id="csa_l_name">Surname</h2>
+
+                                <ul class="list-unstyled">
+                                    <li id="csa_cell"><i class="fa fa-phone"></i> Phone Number: </li>
+                                    <li id="csa_work_phone"> <i class="fa fa-phone"></i> Alt Phone Number: </li>
+                                    <li id="csa_email"><i class="fa fa-envelope-o"></i> Email: </li>
+                                </ul>
+                                
+                                    <button onclick="gotoEdit()" type="button" class="btn btn-primary btn-xs">
+                                        
+                                            <i class="fa fa-edit"> </i> Edit Profile
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+          <div class="clearfix"></div>
+        
+   <!-- /page content -->
+				
+			<!-- /page content -->
+
+			<!-- footer content -->
+			<footer>
+				<div class="pull-right">
+					 Akacia Medical innovative healthcare solutions in Africa.
+				</div>
+                
+				<div class="clearfix"></div>
+			</footer>
+			<!-- /footer content -->
+		
+
+	<!-- jQuery -->
+	<script src="../vendors/jquery/dist/jquery.min.js">
+</script>
+	<!-- Bootstrap -->
+	<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+	<!-- FastClick -->
+	<script src="../vendors/fastclick/lib/fastclick.js"></script>
+	<!-- NProgress -->
+	<script src="../vendors/nprogress/nprogress.js"></script>
+	<!-- Dropzone.js -->
+	<script src="../vendors/dropzone/dist/min/dropzone.min.js"></script>
+
+	<!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="js/toastr/toastr.js"></script>
+
+</body>
+
+</html>

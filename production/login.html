@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Akacia Medical Solution | Login </title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+    <!-- Animate.css -->
+    <link href="../vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+
+   
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.2.1/firebaseui.css" />
+  
+
+  
+  </head>
+  
+ 
+	
+
+  <body class="login">
+
+     
+      
+      <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+      <script src="init.js"></script>
+
+      <script>
+        // Initialize Firebase
+        var signIn_email;
+
+          /**
+          * Handles the sign in button press.
+          */
+
+        function toggleSignIn() {
+            if (firebase.auth().currentUser) {
+              // [START signout]
+              firebase.auth().signOut();
+              // [END signout]
+            } else {
+                signIn_email = document.getElementById('email').value;
+              var password = document.getElementById('password').value;
+              if (signIn_email.length < 4) {
+                alert('Please enter an email address.');
+                return;
+              }
+              if (password.length < 4) {
+                alert('Please enter a password.');
+                return;
+              }
+              // Sign in with email and pass.
+              // [START authwithemail]
+              firebase.auth().signInWithEmailAndPassword(signIn_email, password).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // [START_EXCLUDE]
+                if (errorCode === 'auth/wrong-password') {
+                  alert('Wrong password.');
+                } else {
+                  alert(errorMessage);
+                }
+                console.log(error);
+                document.getElementById('quickstart-sign-in').disabled = false;
+                // [END_EXCLUDE]
+              });
+              // [END authwithemail]
+            }
+            document.getElementById('quickstart-sign-in').disabled = true;
+
+        }
+          /**
+          * Handles the sign up button press.
+          */
+        function handleSignUp() {
+            var regemail = document.getElementById('regemail').value;
+            var regpassword = document.getElementById('regpassword').value;
+            if (regemail.length < 4) {Z
+              alert('Please enter an email address.');
+              return;
+            }
+            if (regpassword.length < 4) {
+              alert('Please enter a password.');
+              return;
+            }
+            // Sign in with email and pass.
+            // [START createwithemail]
+          var regemail = document.getElementById('regemail').value;
+          var regpassword = document.getElementById('regpassword').value;
+          if (regemail.length < 4) {
+                alert('Please enter an email address.');
+                return;
+              }
+              if (regpassword.length < 4) {
+                alert('Please enter a password.');
+                return;
+              }
+              var val = true;
+          try{
+              firebase.auth().createUserWithEmailAndPassword(regemail, regpassword).catch(function(error) {
+              // Handle Errors here.
+              val = false;
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // [START_EXCLUDE]
+              if (errorCode == 'auth/weak-password') {
+                alert('The password is too weak.');
+              } else {
+                alert(errorMessage);
+              }
+              console.log(error);
+              // [END_EXCLUDE]
+            });
+        }catch(err){
+
+        } finally{
+          if(val== true){
+            sendEmailVerification();
+          }
+        }
+            // [END createwithemail]
+        }
+          /**
+          * Sends an email verification to the user.
+          */
+        function sendEmailVerification() {
+            // [START sendemailverification]
+            firebase.auth().currentUser().sendEmailVerification().then(function() {
+              // Email Verification sent!
+              // [START_EXCLUDE]
+              alert('Email Verification Sent!');
+              // [END_EXCLUDE]
+            });
+            // [END sendemailverification]
+        }
+          
+          /**
+          * initApp handles setting up UI event listeners and registering Firebase auth listeners:
+          *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
+          *    out, and that is where we update the UI.
+          */
+        function initApp() {
+            // Listening for auth state changes.
+            // [START authstatelistener]
+            firebase.auth().onAuthStateChanged(function (user) {
+              // [START_EXCLUDE silent]
+              // [END_EXCLUDE]
+              if (user) {
+                // User is signed in.
+
+                var displayName = user.displayName;
+                var email = user.email;
+                var emailVerified = user.emailVerified;
+                var photoURL = user.photoURL;
+                var isAnonymous = user.isAnonymous;
+                var uid = user.uid;
+                var providerData = user.providerData;
+                console.log(user.email + "    " + user.uid);
+                window.user = user;
+
+                if (!emailVerified) {
+
+                    // User is signed out.
+                    // [START_EXCLUDE]
+                    alert('Email address ' + signIn_email + " is not verified, please ensure your email is correct!");
+                    // [END_EXCLUDE]
+
+                } else {
+                  
+                    window.location = 'Create_CSA_Profile.html';
+                }
+                // [END_EXCLUDE]
+              } else {
+
+              }
+              // [START_EXCLUDE silent]
+              // [END_EXCLUDE]
+            });
+            // [END authstatelistener]
+            document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
+            document.getElementById('quickstart-sign-up').addEventListener('click', handleSignUp, false);
+          // document.getElementById('quickstart-verify-email').addEventListener('click', sendEmailVerification, false);
+            //document.getElementById('quickstart-password-reset').addEventListener('click', sendPasswordReset, false);
+        }
+
+        window.onload = function () {
+              
+            initApp();
+        };
+      </script>
+      
+
+    <div style="vertical-align: middle">
+
+        <br /><br />
+        <br /><br />
+        <div align="center">
+            <img id="csa_card_image" style="width:300px; height:100px;"  src="images/logo-colour.png" alt="" class="img img-responsive" />
+        </div>
+      <a class="hiddenanchor" id="signup"></a>
+      <a class="hiddenanchor" id="signin"></a>
+         
+
+      <div class="login_wrapper">
+         
+         
+        <div class="animate form login_form">
+            
+          <section class="login_content">
+             
+            <form>
+              <h1>CSA Login</h1>
+              <div>
+                <input type="text" class="form-control" id ="email" placeholder="email" required="" />
+              </div>
+              <div>
+                <input type="password" class="form-control" id="password" placeholder="password" required="" />
+              </div>
+              <div>
+                <a class="btn btn-default submit" id="quickstart-sign-in"  >Log in</a>
+                <a href="reset_password.html">Lost your password?</a>
+              </div>
+			  
+			
+			
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <p class="change_link">New CSA?
+                  <a href="#signup" class="to_register"> Create Account </a>
+                </p>
+
+                <div class="clearfix"></div>
+                <br />
+
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div id="register" class="animate form registration_form">
+          <section class="login_content">
+              
+            <form>
+              <h1>Create Account</h1>
+              
+              <div>
+                <input type="email" class="form-control" id="regemail" placeholder="Email" required="" />
+              </div>
+              <div>
+                <input type="password" class="form-control" id="regpassword" placeholder="Password" required="" />
+              </div>
+              <div>
+                <a class="btn btn-default submit" id="quickstart-sign-up" >Submit</a>
+              </div>
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <p class="change_link">Already registered?
+                  <a href="#signin" class="to_register"> Log in </a>
+                </p>
+
+                <div class="clearfix"></div>
+                <br />
+
+              </div>
+            </form>
+          </section>
+           
+        </div>
+
+        
+      </div>
+    </div>
+      
+  </body>
+  <script src="js/toastr/toastr.js"></script>
+
+</html>
