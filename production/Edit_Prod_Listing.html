@@ -23,12 +23,12 @@
     <link href="../build/css/custom.min.css" rel="stylesheet">
   </head>
 
-  <body class="nav-md"><div>
+  <body class="nav-md" ><div>
     <div class="container body">
-      <div class="main_container">
-        <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
+      <div class="main_container" >
+        <div class="col-md-3 left_col" >
+          <div class="left_col scroll-view" style ='background-color:#1a6b9f;'>
+            <div class="navbar nav_title" style="border: 0;" >
               <a href="indexs.html" class="site_title"><span>Akacia MS</span></a>
             </div>
 
@@ -50,7 +50,7 @@
                   var where = database.target;
                   var when;
                   var what;
-                  
+                  var childKey;
 
                   function changesMade(UserId, Where, What, When) {
 
@@ -66,41 +66,17 @@
                   }
 
                   function update() {
-
-                      imagesRef.child(file.name).put(file, metadata).then(function (snapshot) {
-                          console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-                          alert(snapshot.metadata.fullPath);
-                          url = snapshot.downloadURL;
-
-                          var p_code = document.getElementById("input_product_code").value;
+                        var p_code = document.getElementById("input_product_code").value;
                           var p_consumables = document.getElementById("input_product_consumables").value;
                           var p_description = document.getElementById("input_product_description").value;
                           var p_pricing = document.getElementById("input_product_pricing").value;
                           var p_pricing_unit = document.getElementById("input_product_pricing_unit").value;
-
-                          updateProduct(p_code, p_consumables, p_description, p_pricing, p_pricing_unit);
-                      });
-                  }
-
-
-
-
-
-                  function updateProduct(Code, Name, Description,url, Pricing, PricingUnit) {
-                      var pricingUnit = 'PRICING UNIT';
-                      try {
+                      
+                        try {
                           // when = firebase.ServerValue.TIMESTAMP;
                           //what = "edit product " + Code;
-                          database.once('value', function (snapshot) {
-
-
-                              snapshot.forEach(function (childSnap) {
-                                  if (childSnap.val().CODE == myCode) {
-                                      var dataKey = childSnap.key;
-                                      
-                                      
-
-                                      database.child(dataKey).update({
+                            
+                                      database.child(childKey).update({
                                           CODE: Code,
                                           CONSUMABLES: Name,
                                           DESCRIPTION: Description,
@@ -108,19 +84,50 @@
                                           PRICING_UNIT: PricingUnit,
                                       });
                                       //changesMade(u_email, where, what, when);
-                                      alert('update success');
+                                      toastr.success('update success');
 
-                                  }
-                              });
-                          });
-
-
-                          }
+                        }
                       catch (err) {
-                          alert(err)
+                          toastr.error(err);
                       }
 
                   }
+
+
+                // function changesMade(Code, Consumables,Description, Url, Pricing, PricingUnit, What, Who, Where) {
+                //     try{
+
+                //         var newPromo = {
+                //                     CODE: Code,
+                //                     CONSUMABLES: Consumables,
+                //                     DESCRIPTION: Description,
+                //                     IMAGE: Url,
+                //                     PRICING: Pricing,
+                //                     PRICING_UNIT: PricingUnit,
+                //                     WHERE: Where,
+                //                     WHAT: What,
+                //                     WHO: Who,
+                //                     WHEN: firebase.database.ServerValue.TIMESTAMP
+                //         };
+
+                //                 var newChangekey = changesRef.push().key;
+
+                //                 var updates ={};
+                //                 updates['/'+newChangekey] = newPromo;
+
+                //                 return changesRef.update(updates);
+                //             }catch(err){
+
+                //                 return alert("create promo error:" + err);
+                                
+                //             }
+                //             finally {
+                //                         alert("New Product is now awaiting approval");
+                //                         window.location.href = "Create_Prod_Listing.html"
+                //                     }
+
+                        
+                // }
 
                   function getAllUrlParams(url) {
 
@@ -198,10 +205,20 @@
                           };
                           reader.readAsDataURL(input.files[0]);
                       }
-                      file = input.files[0]; //input.files[0];
-                      metadata = {
-                          'contentType': file.type
-                      };
+                      file = input.files[0];
+                      toastr.info(file.name); //input.files[0];
+                      imagesRef.child(file.name).put(file, metadata).then(function (snapshot) {
+                          
+                          url = snapshot.downloadURL;
+                        });
+                      database.child(childKey).update({
+                        IMAGE: Url
+                      });
+                      
+                  }
+
+                  function goHome(){
+                      window.location.href = "indexs.html";
                   }
 
                   function readURL(input) {
@@ -267,19 +284,20 @@
                               
                               snapshot.forEach(function (childSnap) {
                                   if (childSnap.val().CODE == myCode) {
+                                    childKey= childSnap.key;
                                       document.getElementById("input_product_code").value = childSnap.val().CODE;
                                       document.getElementById("input_product_consumables").value = childSnap.val().CONSUMABLES;
                                       document.getElementById("input_product_description").value = childSnap.val().DESCRIPTION;
                                       document.getElementById("input_product_pricing").value = childSnap.val().PRICING;
                                       document.getElementById("input_product_pricing_unit").value = childSnap.val().PRICING_UNIT;;
 
-                                      document.getElementById('product_unit_image').src = childSnap.val().IMAGE;
+                                      document.getElementById('files').src = childSnap.val().IMAGE;
 
                                   } 
                               });
                           });
                       } catch (err) {
-                          alert(err);
+                          toastr.error(err);
                       }
                   }
               </script>
@@ -311,33 +329,24 @@
 								<li>
                                     <a href="indexs.html">
                                         <i class="fa fa-edit">
-                                        </i> Home
-                                        <span class="fa fa-chevron-right">
-                                        </span>
-                                    </a>
+                                        </i> Home</a>
                                 </li>
                                 <li>
                                     <a href="Create_Prod_Listing.html">
                                         <i class="fa fa-edit">
-                                        </i> Create Product Listings
-                                        <span class="fa fa-chevron-right">
-                                        </span>
-                                    </a>
+                                        </i> Create Product Listings</a>
                                 </li>
                                 <li>
                                     <a href="Edit_Prod_Listing.html">
-                                        <i class="fa fa-table"></i> Edit Product Listings <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-table"></i> Edit Product Listings </a>
                                 </li>
 								<li>
                                     <a href="View_Promotional_Content.html">
-                                        <i class="fa fa-table"></i> View Promotional Content <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-table"></i> View Promotional Content </a>
                                 </li>
                                 <li>
                                     <a href="Create_Promotional_Content.html">
-                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content </a>
                                 </li>
                             </ul>
                   </div>
@@ -383,105 +392,81 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-        <div class="right_col" role="main">
+        <div class="right_col" role="main" >
 
-          <div class="main_content">
+          <div class="main_content" >
            
             
             <div class="clearfix"></div>
 
-            <div class="row">
+            <div class="row" >
               <div class="col-md-12 col-sm-12 col-xs-12">
-							<div class="x_panel">
+							<div class="x_panel" style="background-color:#F1F8E9">
 								<div class="x_title">
 									<h2>Edit Product Listing</h2>
 									<div class="clearfix"></div>
-								</div>
-                      <form>
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="textarea">
-                              Image <span class="required">*</span>
-                          </label>
-                          <div class="product-image">
-                              <img src="images/placeholder_image.jpg" alt="..." id="product_unit_image" style="width:200px; height:200px;">
-
-                              <button id="files" onclick="document.getElementById('file').click(); return false;">Change image </button>
-                              <input type="file" name="file" onchange="handleFileSelect(this);" style="visibility:hidden" id="file" accept="image/*">
-                          </div>
+								</div class="item form-group">
+                      <form class="form-line col-md-offset-4">
+                          
+                          <span class="image view-first form-line col-xs-6" >
+                                
+                              <img class="img" style='cursor:pointer' src="images/placeholder_image.jpg" alt="..." id="files" onclick="document.getElementById('file').click(); return false;" width ='250px' height='300px'/>
+                              <input type="file" name="file" onchange="handleFileSelect(this);" style="visibility:hidden" id="file" accept="image/*" required/>
+                              
+                          </span>
                           
                       </form>
                       <br />
 
                     <!--Product Details-->
-                      <form name="form_name">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="occupation">
-                              Product Code <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                              <input id="input_product_code" type="text" name="occupation"
-                                     data-validate-length-range="5,20"
-                                     class="optional form-control col-md-7 col-xs-12"/>
+                      <form class="form_name form-line focused">
+                          
+                          <div class="col-md-6 ">
+                              <input id="input_product_code" type="text" placeholder="Product Code" required = "required"
+                                     data-validate-length-range="5,20" class="form-control"/>
+                                     <label class="form-label">Product Code</label>
                           </div>
+                          <div class="col-md-6 form-line focused">
+                                <input id="input_product_consumables" type="text" required = "required"
+                                placeholder="Product Name" data-validate-length-range="5,20" class="form-control"/>
+                                <label class="form-label">Product Name</label>
+                            </div>
                       </form>
-                      <br />
-
-                      <form name="form_type">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="occupation">
-                              Product Name<span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                              <input id="input_product_consumables" type="text"
-                                     name="occupation" data-validate-length-range="5,20"
-                                     class="optional form-control col-md-7 col-xs-12">
-                          </div>
-                      </form>
+                      
 
                       <br />
 
 
                       <form name="form_size">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="occupation">
-                              Product Pricing <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                              <input id="input_product_pricing" type="text"
-                                     name="occupation" data-validate-length-range="5,20"
-                                     class="optional form-control col-md-7 col-xs-12">
+                          
+                          <div class="col-md-6 form-line focused">
+                              <input id="input_product_pricing" type="text" required = "required"
+                              placeholder="Product Pricing" data-validate-length-range="5,20" class="form-control"/>
+                              <label class="form-label">Product Pricing</label>
                           </div>
+                          <div class="col-md-6 form-line focused">
+                                <input id="input_product_pricing_unit" type="text" required = "required"
+                                placeholder="Product Pricing Unit" data-validate-length-range="5,20" class="form-control"/>
+                                <label class="form-label">Product Pricing Unit</label>
+                            </div>
                       </form>
                       <br />
 
                       <form name="form_description">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="textarea">
-                              Product Pricing Unit <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                              <input id="input_product_pricing_unit" type="text"
-                                     name="occupation" data-validate-length-range="5,20"
-                                     class="optional form-control col-md-7 col-xs-12">
-                          </div>
+                          
+                            <div class="col-md-12 form-line focused">
+                                    <input id="input_product_description" type="text" required = "required"
+                                           placeholder="Product Description" data-validate-length-range="5,20"
+                                           class="form-control"/>
+                                           <label class="form-label">Product Description</label>
+                                </div>
                       </form>
-                      <br />
-
-                      <form name="form_description">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12"
-                                 for="textarea">
-                              Product Description <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                              <input id="input_product_description" type="text"
-                                     name="occupation" data-validate-length-range="5,20"
-                                     class="optional form-control col-md-7 col-xs-12">
-                          </div>
-                      </form>
+                      
                       <br />
 
 
-                        <button id="btn_update" onclick="update()" type="button" class="btn btn-success btn-lg">Update</button>
+                        <button id="btn_update" onclick="update()" type="button" class="btn btn-success btn-lg pull-right">Update</button>
+                        <button  onclick="goHome()" type="button" style="color:gray" class="btn btn-default btn-lg pull-right">Cancel</button>
                       
 
                     </div>
@@ -499,7 +484,7 @@
         <!-- footer content -->
         <footer>
             <div class="pull-right">
-                Akacia Medical innovative healthcare solutions in Africa.
+                    ©2017 buildHealth
             </div>
             <div class="clearfix"></div>
         </footer>
@@ -507,6 +492,9 @@
       </div>
 
     <!-- jQuery -->
+    <style>
+        
+    </style>
     <script src="../vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -518,5 +506,7 @@
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
     <script src="js/toastr/toastr.js"></script>
+    <script src="js/advanced-form-elements.js"></script>
+    <script src="js/basic-form-elements.js"></script>
   </body>
 </html>

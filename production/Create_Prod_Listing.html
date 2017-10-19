@@ -2,31 +2,28 @@
 <html lang="en">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!-- Meta, title, CSS, favicons, etc. -->
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Akacia Medical Solution | Create Product Listing</title>
+    <title>Akacia Medical Solution | Create Product Listing</title>
 
-<!-- Bootstrap -->
-<link href="../vendors/bootstrap/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<!-- Font Awesome -->
-<link href="../vendors/font-awesome/css/font-awesome.min.css"
-	rel="stylesheet">
-<!-- NProgress -->
-<link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
-<!-- Dropzone.js -->
-<link href="../vendors/dropzone/dist/min/dropzone.min.css"
-	rel="stylesheet">
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
 
-<!-- Custom Theme Style -->
-<link href="../build/css/custom.min.css" rel="stylesheet">
-<link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
-<!--Firebase Connection-->
-<!--firebase-->
+    <link href="../production/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="../production/css/TableTools.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="css/toastr/toastr.css">
+
 
 </head>
 <body class="nav-md">
@@ -51,7 +48,7 @@
         var metadata;
         var u_email;
         var changesRef = firebase.database().ref('changes/');
-        var where = database.target;
+        var where;
         var when;
         var what;
 
@@ -59,7 +56,7 @@
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    $('#images')
+                    $('#files')
                     .attr('src', e.target.result)
                     .width(200)
                     .height(190);
@@ -76,7 +73,7 @@
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    $('#images')
+                    $('#files')
                     .attr('src', e.target.result)
                     .width(200)
                     .height(190);
@@ -213,7 +210,7 @@
 	<div class="container body">
 		<div class="main_container">
 			<div class="col-md-3 left_col">
-				<div class="left_col scroll-view">
+				<div class="left_col scroll-view" style ='background-color:#1a6b9f;'>
 					<div class="navbar nav_title" style="border: 0;">
 						<a href="indexs.html" class="site_title">
 							<span>Akacia MS</span></a>
@@ -244,33 +241,24 @@
 								<li>
                                     <a href="indexs.html">
                                         <i class="fa fa-edit">
-                                        </i> Home
-                                        <span class="fa fa-chevron-right">
-                                        </span>
-                                    </a>
+                                        </i> Home</a>
                                 </li>
                                 <li>
                                     <a href="Create_Prod_Listing.html">
                                         <i class="fa fa-edit">
-                                        </i> Create Product Listings
-                                        <span class="fa fa-chevron-right">
-                                        </span>
-                                    </a>
+                                        </i> Create Product Listings</a>
                                 </li>
                                 <li>
                                     <a href="Edit_Prod_Listing.html">
-                                        <i class="fa fa-table"></i> Edit Product Listings <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-table"></i> Edit Product Listings </a>
                                 </li>
 								<li>
                                     <a href="View_Promotional_Content.html">
-                                        <i class="fa fa-table"></i> View Promotional Content <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-table"></i> View Promotional Content</a>
                                 </li>
                                 <li>
                                     <a href="Create_Promotional_Content.html">
-                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content <span class="fa fa-chevron-right"></span>
-                                    </a>
+                                        <i class="fa fa-bar-chart-o"></i> Create Promo Content</a>
                                 </li>
                             </ul>
                         </div>
@@ -293,7 +281,9 @@
 			<div class="top_nav">
 				<div class="nav_menu">
 					<nav>
-
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
 						<ul class="nav navbar-nav navbar-right">
 							<li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -322,107 +312,74 @@
 
 					<div class="row">
 						<div class="col-md-12 col-sm-12 col-xs-12">
-							<div class="x_panel">
+							<div class="x_panel" style="background-color:#F1F8E9">
 								<div class="x_title">
 									<h2>Create Product Listing</h2>
 									<div class="clearfix"></div>
 								</div>
 								<div class="item form-group">
+
+                                        <form class="form-line col-md-offset-4">
+                                                
+                                                    <div style='cursor:pointer' class="image view-first col-xs-6" align="center">
+                                                        <img src="images/placeholder_image.jpg" alt="..." id="files" onclick="document.getElementById('file').click(); return false;" width="250px" height="300px" />
+                                                    
+                                                        
+                                                        <input type="file" name="file" onchange="handleFileSelect(this);"  style="visibility:hidden" id="file" accept="image/*"/>
+                                                    </div>
+                                        </form>                                
 								
-								<form name="form_name">
-									<label class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="occupation">Product Code <span class="required">*</span>
-									</label>
-									<div class="col-md-6 col-sm-6 col-xs-12">
+								<form class="form-line focused">
+									
+									<div class="col-md-6">
 										<input id="input_product_code" type="text" name="occupation" 
-											data-validate-length-range="5,20"
-											class="optional form-control col-md-7 col-xs-12">
-									</div>
-								</form>
-									<br />
-									<br /> 
-									
-									<form name="form_type">
-									<label
-										class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="occupation">Product Name<span
-										class="required">*</span>
-									</label>
-									<div class="col-md-6 col-sm-6 col-xs-12">
-										<input id="input_product_consumables" type="text" 
-											name="occupation" data-validate-length-range="5,20"
-											class="optional form-control col-md-7 col-xs-12">
-									</div>
-										</form>
-									
-									<br />
-									<br/> 
+											data-validate-length-range="5,20" placeholder="Product Code "
+                                            class="form-control"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                            <input id="input_product_consumables" type="text" placeholder="Product Name"
+                                                name="occupation" data-validate-length-range="5,20"
+                                                class="form-control"/>
+                                    </div>
+                                </form>
+                                <br/>
+									 
 									
 									
-									<form name="form_size">
-									<label
-										class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="occupation">Product Pricing <span
-										class="required">*</span>
-									</label>
-									<div class="col-md-6 col-sm-6 col-xs-12">
+									
+									<form class="form-line focused">
+									
+									<div class="col-md-6">
 										<input id="input_product_pricing" type="text" 
-											name="occupation" data-validate-length-range="5,20"
-											class="optional form-control col-md-7 col-xs-12">
-									</div>
-									</form>
-									<br />
-									<br /> 
-									
-									<form name="form_description">
-									<label
-										class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="textarea">Product Pricing Unit <span
-										class="required">*</span>
-									</label>
-									<div class="col-md-6 col-sm-6 col-xs-12">
-										<input id="input_product_pricing_unit" type="text" 
-											name="occupation" data-validate-length-range="5,20"
-											class="optional form-control col-md-7 col-xs-12">
-									</div>
-									</form>
-									<br />
-									<br />
-									
-									<form name="form_description">
-									<label
-										class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="textarea">Product Description <span
-										class="required">*</span>
-									</label>
-									<div class="col-md-6 col-sm-6 col-xs-12">
-										<input id="input_product_description" type="text" 
-											name="occupation" data-validate-length-range="5,20"
-											class="optional form-control col-md-7 col-xs-12">
-									</div>
-									</form>
-									<br />
-
-
-                                    <form>
-									<label
-										class="control-label col-md-3 col-sm-3 col-xs-12"
-										for="textarea">Image <span class="required">*</span>
-									</label>
-                                        <div class="product-image col-md-6 col-sm-6 col-xs-12" style="position:relative;">
-                                            <img src="images/placeholder_image.jpg" alt="..." id="images" style="width:150px; height:150px;" >
-                                            
-                                            <button id="files" onclick="document.getElementById('file').click(); return false;" >Add Image </button>
-                                            <input type="file" name="file" onchange="handleFileSelect(this);"  style="visibility:hidden" id="file" accept="image/*">
+											name="occupation" data-validate-length-range="5,20" placeholder="Product Pricing"
+                                            class="form-control"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                            <input id="input_product_pricing_unit" type="text" 
+                                                name="occupation" data-validate-length-range="5,20" placeholder="Product Pricing Unit"
+                                                class="form-control"/>
                                         </div>
-                                        </form>
+									</form>
+									
+									<br/>
+									<form class="form-line focused">
+									
+									<div class="col-md-12">
+										<input id="input_product_description" type="text" placeholder="Product Description"
+                                            class="form-control"/>
+									</div>
+									</form>
+									<br />
+
+
+                                    
 										<br /> 
 
-									<div class="form-group">
-										<div class="col-md-6 col-md-offset-3">
-											<button id="btn_send" type="submit" onclick=  "sendData()"style="position:relative; right:-225px; width:190px;" class="btn btn-success">Submit</button>
-										</div>
-									</div>
+									
+                                            <button id="btn_send" href="indexs.html" class="btn btn-warning btn-lg pull-left">Cancel</button>
+											<button id="btn_send" type="submit" onclick=  "sendData()" class="btn btn-success btn-lg pull-right">Submit</button>
+										
+									
 								</div>
 
 
@@ -436,7 +393,7 @@
 			<!-- footer content -->
             <footer>
                 <div class="pull-right">
-                    Akacia Medical innovative healthcare solutions in Africa.
+                   ©2017 buildHealth
                 </div>
                 <div class="clearfix"></div>
             </footer>
@@ -444,21 +401,17 @@
 		</div>
 	</div>
 
-	<!-- jQuery -->
-	<script src="../vendors/jquery/dist/jquery.min.js">
-</script>
-	<!-- Bootstrap -->
-	<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-	<!-- FastClick -->
-	<script src="../vendors/fastclick/lib/fastclick.js"></script>
-	<!-- NProgress -->
-	<script src="../vendors/nprogress/nprogress.js"></script>
-	<!-- Dropzone.js -->
-	<script src="../vendors/dropzone/dist/min/dropzone.min.js"></script>
-
-	<!-- Custom Theme Scripts -->
-	<script src="../build/js/custom.min.js"></script>
-    <script src="js/toastr/toastr.js"></script>
+    <!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../vendors/nprogress/nprogress.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>
+<script src="js/toastr/toastr.js"></script>
 </body>
 
 </html>

@@ -27,8 +27,8 @@ indexRef.on("child_added", snap => {
 	var PricingUnit = snap.child("PRICING UNIT").val();
 
 
-	$("#table_body").append("<tr><td>   <image src = " + Image + " width ='80px' height='80px'> </td><td>" + Name + "</td><td>" + Description + "</td><td>R " + Pricing +
-	"</td><td><button onclick = 'getCode(this.id)'  id="+Code+">Edit Item</button></td></tr>");
+	$("#table_body").append("<tr><td> <div class='view-first'>  <image src = " + Image + " width ='80px' height='80px'></div> </td><td>" + Name + "</td><td>" + Description + "</td><td>R " + Pricing +
+	"</td><td><button class='btn-success' style ='background-color:#02b29d;' onclick = 'getCode(this.id)'  id="+Code+">Edit Item</button></td></tr>");
 
 
 });

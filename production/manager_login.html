@@ -58,27 +58,26 @@
                 signIn_email = document.getElementById('email').value;
               var password = document.getElementById('password').value;
               if (signIn_email.length < 4) {
-                toastr.error('Please enter an email address.');
+                alert('Please enter an email address.');
                 return;
               }
               if (password.length < 4) {
-                toastr.error('Please enter a password.');
+                alert('Please enter a password.');
                 return;
               }
               // Sign in with email and pass.
               // [START authwithemail]
-              toastr.info("signing in...");
               firebase.auth().signInWithEmailAndPassword(signIn_email, password).catch(function (error) {
                 // Handle Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
                 // [START_EXCLUDE]
                 if (errorCode === 'auth/wrong-password') {
-                  toastr.error('Wrong password.');
+                  alert('Wrong password.');
                 } else {
-                  toastr.error(errorMessage);
+                  alert(errorMessage);
                 }
-                toastr.error(error);
+                console.log(error);
                 document.getElementById('quickstart-sign-in').disabled = false;
                 // [END_EXCLUDE]
               });
@@ -94,11 +93,11 @@
             var regemail = document.getElementById('regemail').value;
             var regpassword = document.getElementById('regpassword').value;
             if (regemail.length < 4) {Z
-              toastr.error('Please enter an email address.');
+              alert('Please enter an email address.');
               return;
             }
             if (regpassword.length < 4) {
-              toastr.error('Please enter a password.');
+              alert('Please enter a password.');
               return;
             }
             // Sign in with email and pass.
@@ -106,16 +105,15 @@
           var regemail = document.getElementById('regemail').value;
           var regpassword = document.getElementById('regpassword').value;
           if (regemail.length < 4) {
-                toastr.error('Please enter an email address.');
+                alert('Please enter an email address.');
                 return;
               }
               if (regpassword.length < 4) {
-                toastr.error('Please enter a password.');
+                alert('Please enter a password.');
                 return;
               }
               var val = true;
           try{
-            toastr.info("creating account...");
               firebase.auth().createUserWithEmailAndPassword(regemail, regpassword).catch(function(error) {
               // Handle Errors here.
               val = false;
@@ -123,9 +121,9 @@
               var errorMessage = error.message;
               // [START_EXCLUDE]
               if (errorCode == 'auth/weak-password') {
-                toastr.error('The password is too weak.');
+                alert('The password is too weak.');
               } else {
-                toastr.error(errorMessage);
+                alert(errorMessage);
               }
               console.log(error);
               // [END_EXCLUDE]
@@ -147,7 +145,7 @@
             firebase.auth().currentUser().sendEmailVerification().then(function() {
               // Email Verification sent!
               // [START_EXCLUDE]
-              toastr.success('Email Verification Sent, please wait for the email to login');
+              alert('Email Verification Sent!');
               // [END_EXCLUDE]
             });
             // [END sendemailverification]
@@ -181,12 +179,12 @@
 
                     // User is signed out.
                     // [START_EXCLUDE]
-                    toastr.error('Email address ' + signIn_email + " is not verified, please ensure your email is correct!");
+                    alert('Email address ' + signIn_email + " is not verified, please ensure your email is correct!");
                     // [END_EXCLUDE]
 
                 } else {
                   
-                    window.location = 'Create_CSA_Profile.html';
+                    window.location = 'Dashboard.html';
                 }
                 // [END_EXCLUDE]
               } else {
@@ -216,7 +214,6 @@
         <div align="center">
             <img id="csa_card_image" style="width:300px; height:100px;"  src="images/logo-colour.png" alt="" class="img img-responsive" />
         </div>
-      <a class="hiddenanchor" id="signup"></a>
       <a class="hiddenanchor" id="signin"></a>
          
 
@@ -228,7 +225,7 @@
           <section class="login_content">
              
             <form>
-              <h1>CSA Login</h1>
+              <h1>Product Manager Login</h1>
               <div>
                 <input type="text" class="form-control" id ="email" placeholder="email" required="" />
               </div>
@@ -243,61 +240,14 @@
 			
 			
               <div class="clearfix"></div>
-
-              <div class="separator">
-                <p class="change_link">New CSA?
-                  <a href="#signup" class="to_register"> Create Account </a>
-                </p>
-
-                <div class="clearfix"></div>
-                <br />
-
-              </div>
             </form>
           </section>
         </div>
 
-        <div id="register" class="animate form registration_form">
-          <section class="login_content">
-              
-            <form>
-              <h1>Create Account</h1>
-              
-              <div>
-                <input type="email" class="form-control" id="regemail" placeholder="Email" required="" />
-              </div>
-              <div>
-                <input type="password" class="form-control" id="regpassword" placeholder="Password" required="" />
-              </div>
-              <div>
-                <a class="btn btn-default submit" id="quickstart-sign-up" >Submit</a>
-              </div>
-              <div class="clearfix"></div>
-
-              <div class="separator">
-                <p class="change_link">Already registered?
-                  <a href="#signin" class="to_register"> Log in </a>
-                </p>
-
-                <div class="clearfix"></div>
-                <br />
-
-              </div>
-            </form>
-          </section>
-           
-        </div>
+     
 
         
       </div>
-       <!-- footer content -->
-    <footer>
-        <div class="pull-right">
-                ©2017 buildHealth
-        </div>
-        <div class="clearfix"></div>
-    </footer>
-    <!-- /footer content -->
     </div>
       
   </body>
